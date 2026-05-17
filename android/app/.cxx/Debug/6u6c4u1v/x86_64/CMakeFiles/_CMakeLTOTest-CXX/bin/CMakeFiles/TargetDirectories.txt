@@ -1,0 +1,4 @@
+C:/Users/zaban/NewSAMS/NewSAMS/android/app/.cxx/Debug/6u6c4u1v/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
+C:/Users/zaban/NewSAMS/NewSAMS/android/app/.cxx/Debug/6u6c4u1v/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
+C:/Users/zaban/NewSAMS/NewSAMS/android/app/.cxx/Debug/6u6c4u1v/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
+C:/Users/zaban/NewSAMS/NewSAMS/android/app/.cxx/Debug/6u6c4u1v/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir
