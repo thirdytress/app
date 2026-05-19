@@ -38,6 +38,7 @@ interface AppContextProps {
   applicationForm: ApplicationFormState;
   updateApplicationForm: (data: Partial<ApplicationFormState>) => void;
   resetGoalsAndSchedule: (opts?: { weeklyGoal?: number; startDate?: string; weeks?: number }) => void;
+  setServerData: (data: { shifts: Shift[], attendanceLogs: AttendanceLog[] }) => void;
 }
 
 export const AppContext = createContext<AppContextProps>({} as AppContextProps);
@@ -107,6 +108,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     availability: { Monday: { morning: false, afternoon: false }, Tuesday: { morning: false, afternoon: false }, Wednesday: { morning: false, afternoon: false }, Thursday: { morning: false, afternoon: false }, Friday: { morning: false, afternoon: false } },
     corFile: null, gradesFile: null, otherDocs: null,
   });
+
+  const setServerData = (data: { shifts: Shift[], attendanceLogs: AttendanceLog[] }) => {
+    setShifts(data.shifts);
+    setAttendanceLogs(data.attendanceLogs);
+  };
 
   // No automatic required-hours cap by default. Use `resetGoalsAndSchedule` to set term caps if desired.
 
@@ -416,6 +422,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       resetGoalsAndSchedule,
       applicationForm,
       updateApplicationForm,
+      setServerData,
     }}>
       {children}
     </AppContext.Provider>

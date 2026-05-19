@@ -20,11 +20,11 @@ const LoginScreen = ({ navigation }: any) => {
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { refreshData } = React.useContext(AppContext);
+  const { updateProfile, setServerData } = React.useContext(AppContext);
 
   const handleLogin = async () => {
     setIsLoggingIn(true);
-    setErrorMessage(null); // Clear previous errors
+    setErrorMessage(null);
 
     if (!email || !password) {
       setErrorMessage('Please enter both email and password.');
@@ -32,17 +32,51 @@ const LoginScreen = ({ navigation }: any) => {
       return;
     }
     console.log('[DEBUG] Attempting login for email:', email);
+    
     try {
-      // Bypassing real authentication for now as requested.
-      // await samsService.signIn(email, password);
-      // if (refreshData) {
-      //   await refreshData();
-      // }
+      // Connect to the actual SAMS web database via our new mobile API
+      // Note: 10.0.2.2 is the localhost alias for Android emulators
+      const response = await fetch('http://10.0.2.2/samss-main/api/mobile_login.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          identifier: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Login failed. Please check your credentials.');
+      }
+
+      console.log('[DEBUG] Login successful:', data.user);
+      
+      // Update global context with real data from the database
+      updateProfile({ 
+        name: data.user.name, 
+        email: data.user.email, 
+        studentId: data.user.studentId 
+      });
+
+      // Inject the actual schedules and attendance logs into the mobile app state!
+      if (data.shifts || data.attendanceLogs) {
+        setServerData({
+          shifts: data.shifts || [],
+          attendanceLogs: data.attendanceLogs || []
+        });
+      }
+
       navigation.replace('Main');
     } catch (error: any) {
-      setErrorMessage(error.message || 'Please check your credentials.'); // Set inline error
-      Alert.alert('Login Failed', error.message || 'Please check your credentials.');
-    } finally { // This finally block ensures isLoading is always reset
+      console.error('[DEBUG] Login error:', error);
+      setErrorMessage(error.message || 'Network error. Please check your connection.');
+      Alert.alert('Login Failed', error.message || 'Network error. Please check your connection.');
+    } finally {
       setIsLoggingIn(false);
     }
   };
@@ -100,7 +134,7 @@ const LoginScreen = ({ navigation }: any) => {
 
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => Alert.alert('Notice', 'Applications are available on the web only.') }>
+            <TouchableOpacity onPress={() => Alert.alert('Notice', 'Applications are available on the web only.')}>
               <Text style={styles.footerLink}>Apply Here</Text>
             </TouchableOpacity>
           </View>

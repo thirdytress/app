@@ -188,26 +188,18 @@ const DashboardScreen = ({ navigation }: any) => {
           </View>
         </View>
 
-        {/* Stats Row */}
-        <View style={styles.statsRow}>
-          <View style={styles.statBoxBlue}>
-            <View style={styles.statBoxContent}>
-              <View>
-                <Text style={styles.statNumberYellow}>{weeklyRenderedHours} <Text style={{ fontSize: 14, color: '#ffffff', fontWeight: 'bold' }}>/ {userProfile?.weeklyHoursGoal || 8}h</Text></Text>
-                <Text style={styles.statLabelWhite}>This Week</Text>
-              </View>
-              <Clock size={32} color="#93C5FD" opacity={0.8} />
-            </View>
+        {/* Weekly Rendered Hours vs Scheduled (MAA-03 Spec) */}
+        <View style={styles.weeklyCard}>
+          <View style={styles.weeklyHeader}>
+            <Text style={styles.weeklyTitle}>This Week's Progress</Text>
+            <Clock size={20} color="#F4B333" />
           </View>
-
-          <View style={styles.statBoxGold}>
-            <View style={styles.statBoxContent}>
-              <View>
-                <Text style={styles.statNumberRed}>{daysStreak}</Text>
-                <Text style={styles.statLabelDark}>Days Streak</Text>
-              </View>
-              <Flame size={32} color="#DC2626" />
-            </View>
+          <View style={styles.weeklyContent}>
+            <Text style={styles.weeklyHoursLarge}>{weeklyRenderedHours}</Text>
+            <Text style={styles.weeklyHoursTotal}> / {userProfile?.weeklyHoursGoal || 8} hrs</Text>
+          </View>
+          <View style={styles.weeklyProgressBarBg}>
+            <View style={[styles.weeklyProgressBarFill, { width: `${Math.min(100, (weeklyRenderedHours / (userProfile?.weeklyHoursGoal || 8)) * 100)}%` }]} />
           </View>
         </View>
       </View>
@@ -218,6 +210,18 @@ const DashboardScreen = ({ navigation }: any) => {
           <RefreshControl refreshing={isLoading} onRefresh={refreshData} tintColor="#F4B333" />
         }
       >
+        {/* Pending Notifications (MAA-03 Spec) */}
+        {pendingShifts.length > 0 && (
+          <TouchableOpacity style={styles.notifBanner} onPress={() => navigation.navigate('Notifications')}>
+            <View style={styles.notifIconContainerBanner}>
+              <Bell size={20} color="#F4B333" />
+            </View>
+            <View style={styles.notifTextContainerBanner}>
+              <Text style={styles.notifBannerTitle}>You have {pendingShifts.length} pending notification{pendingShifts.length > 1 ? 's' : ''}</Text>
+              <Text style={styles.notifBannerSub}>Tap to view details</Text>
+            </View>
+          </TouchableOpacity>
+        )}
 
         {/* SECTION 1: ACTIONABLE STATUS (Urgent/Immediate) */}
         {activeShift ? (() => {
@@ -597,47 +601,86 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 15,
+  weeklyCard: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
-  statBoxBlue: {
-    flex: 1,
-    backgroundColor: '#1E3A8A',
-    borderRadius: 16,
-    padding: 15,
-  },
-  statBoxGold: {
-    flex: 1,
-    backgroundColor: '#F4B333',
-    borderRadius: 16,
-    padding: 15,
-  },
-  statBoxContent: {
+  weeklyHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 10,
   },
-  statNumberYellow: {
-    color: '#F4B333',
-    fontSize: 28,
-    fontWeight: '900',
-  },
-  statNumberRed: {
-    color: '#DC2626',
-    fontSize: 28,
-    fontWeight: '900',
-  },
-  statLabelWhite: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  statLabelDark: {
-    color: '#061D5A',
-    fontSize: 12,
+  weeklyTitle: {
+    color: '#93C5FD',
+    fontSize: 14,
     fontWeight: '600',
+  },
+  weeklyContent: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 15,
+  },
+  weeklyHoursLarge: {
+    color: '#ffffff',
+    fontSize: 40,
+    fontWeight: '900',
+  },
+  weeklyHoursTotal: {
+    color: '#D1D5DB',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  weeklyProgressBarBg: {
+    height: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 4,
+  },
+  weeklyProgressBarFill: {
+    height: 8,
+    backgroundColor: '#F4B333',
+    borderRadius: 4,
+  },
+  notifBanner: {
+    backgroundColor: '#ffffff',
+    marginHorizontal: 20,
+    marginTop: 15,
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: '#F4B333',
+  },
+  notifIconContainerBanner: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFFBEB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  notifTextContainerBanner: {
+    flex: 1,
+  },
+  notifBannerTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#061D5A',
+  },
+  notifBannerSub: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
   },
   scrollView: {
     flex: 1,
