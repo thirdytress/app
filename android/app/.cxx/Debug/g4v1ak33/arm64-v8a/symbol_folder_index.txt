@@ -1,1 +1,0 @@
-C:\xampp\htdocs\SAMS_App-main\android\app\build\intermediates\cxx\Debug\g4v1ak33\obj\arm64-v8a
